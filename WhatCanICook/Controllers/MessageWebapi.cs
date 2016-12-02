@@ -35,17 +35,44 @@ namespace WhatCanICook
         {
             var recipe = recipes.FirstOrDefault(x => x.name.Equals(activity.Text, StringComparison.CurrentCultureIgnoreCase));
             var msg = "";
+            Activity reply;
+
             if (recipe == null)
             {
                 msg = "receita inválida";
+                reply = activity.CreateReply(msg);
             }
             else
             {
                 msg = $"Modo de preparo: \r\n{string.Join(" - \r\n", recipe.directions.Select(x => x).ToList())}";
+                reply = activity.CreateReply(msg);
+
+                reply.Attachments = new List<Attachment>();
+                List<CardImage> cardImages = new List<CardImage>();
+                cardImages.Add(new CardImage(url: recipe.image));
+
+                List<CardAction> cardButtons = new List<CardAction>();
+                CardAction plButton = new CardAction()
+                {
+                    Value = recipe.image,
+                    Type = "openUrl",
+                    Title = recipe.name
+                };
+
+                cardButtons.Add(plButton);
+                HeroCard plCard = new HeroCard()
+                {
+                    Title = "Receita",
+                    Subtitle = recipe.name,
+                    Images = cardImages,
+                    Buttons = cardButtons
+                };
+                Attachment plAttachment = plCard.ToAttachment();
+                reply.Attachments.Add(plAttachment);
             }
 
             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
-            await connector.Conversations.ReplyToActivityAsync(activity.CreateReply(msg));
+            await connector.Conversations.ReplyToActivityAsync(reply);
         }
 
         public static async Task GetRecipes(Activity activity)
