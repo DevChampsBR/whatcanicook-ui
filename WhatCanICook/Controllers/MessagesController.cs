@@ -10,9 +10,17 @@ using Newtonsoft.Json;
 
 namespace WhatCanICook
 {
+    public enum CookBotState { Initial, Ingredients, Webapi, Intro };
+
     [BotAuthentication]
     public class MessagesController : ApiController
     {
+        static CookBotState _state = CookBotState.Initial;
+        static public void SetInternalState(CookBotState state)
+        {
+            _state = state;
+        }
+
         /// <summary>
         /// POST: api/Messages
         /// Receive a message from a user and reply to it
@@ -21,13 +29,23 @@ namespace WhatCanICook
         {
             if (activity.Type == ActivityTypes.Message)
             {
-                ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
-                // calculate something for us to return
-                int length = (activity.Text ?? string.Empty).Length;
+                switch (_state)
+                {
+                    case CookBotState.Initial:
+                        await MessageInitial.Post(activity);
+                        break;
+                    case CookBotState.Ingredients:
+                        await MessageIngredientes.Post(activity);
+                        break;
+                    case CookBotState.Webapi:
+                        await MessageWebapi.Post(activity);
+                        break;
+                    case CookBotState.Intro:
+                        await MessageIntro.Post(activity);
+                        break;
 
-                // return our reply to the user
-                Activity reply = activity.CreateReply($"You sent {activity.Text} which was {length} characters");
-                await connector.Conversations.ReplyToActivityAsync(reply);
+                }
+
             }
             else
             {

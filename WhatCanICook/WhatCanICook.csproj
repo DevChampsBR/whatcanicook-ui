@@ -119,6 +119,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\MessageWebapi.cs" />
+    <Compile Include="Controllers\MessageInitial.cs" />
+    <Compile Include="Controllers\MessageIntro.cs" />
+    <Compile Include="Controllers\MessageIngredientes.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
