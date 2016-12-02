@@ -25,6 +25,7 @@ namespace WhatCanICook
                     {
                         var reply = activity.CreateReply($"Mamãe tá cansada demais. Hoje você vai cozinhar! Vai ver o que tem disponível no armário e geladeira.");
                         await connector.Conversations.ReplyToActivityAsync(reply);
+                        MessagesController.SetInternalState(CookBotState.Webapi);
                     }
                 }
             }
