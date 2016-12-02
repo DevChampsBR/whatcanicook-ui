@@ -15,11 +15,14 @@ namespace WhatCanICook
     [BotAuthentication]
     public class MessagesController : ApiController
     {
-        static CookBotState _state = CookBotState.Initial;
+        static CookBotState _state = CookBotState.Intro;
         static public void SetInternalState(CookBotState state)
         {
             _state = state;
         }
+
+        static MessageIntro messageIntro = new MessageIntro();
+        static MessageWebapi messageWebApi = new MessageWebapi();
 
         /// <summary>
         /// POST: api/Messages
@@ -27,25 +30,32 @@ namespace WhatCanICook
         /// </summary>
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
+
             if (activity.Type == ActivityTypes.Message)
             {
-                switch (_state)
+                if (activity.Text.Equals("reset", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    case CookBotState.Initial:
-                        await MessageInitial.Post(activity);
-                        break;
-                    case CookBotState.Ingredients:
-                        await MessageIngredientes.Post(activity);
-                        break;
-                    case CookBotState.Webapi:
-                        await MessageWebapi.Post(activity);
-                        break;
-                    case CookBotState.Intro:
-                        await MessageIntro.Post(activity);
-                        break;
-
+                    MessagesController.SetInternalState(CookBotState.Intro);
+                    MessageIntro.status = 0;
                 }
-
+                else
+                {
+                    switch (_state)
+                    {
+                        case CookBotState.Initial:
+                            await MessageInitial.Post(activity);
+                            break;
+                        case CookBotState.Ingredients:
+                            await MessageIngredientes.Post(activity);
+                            break;
+                        case CookBotState.Webapi:
+                            await MessageWebapi.Post(activity);
+                            break;
+                        case CookBotState.Intro:
+                            await MessageIntro.Post(activity);
+                            break;
+                    }
+                }
             }
             else
             {

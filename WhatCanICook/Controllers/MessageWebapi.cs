@@ -13,27 +13,27 @@ namespace WhatCanICook
 {
     public class MessageWebapi
     {
-        public static List<DtoResponse.Recipe> recipes;
-        public static int step = 0;
+        public List<DtoResponse.Recipe> recipes;
+        public int step = 0;
 
-        public static async Task Post([FromBody]Activity activity)
+        public async Task Post([FromBody]Activity activity)
         {
             switch (step)
             {
                 case 0:
-                    await MessageWebapi.GetRecipes(activity);
+                    await GetRecipes(activity);
                     break;
                 case 1:
-                    await MessageWebapi.SelectRecipe(activity);
+                    await SelectRecipe(activity);
                     break;
                 default:
                     break;
             }
         }
 
-        public static async Task SelectRecipe(Activity activity)
+        public async Task SelectRecipe(Activity activity)
         {
-            var recipe = recipes.FirstOrDefault(x => x.name.Contains(activity.Text));
+            var recipe = recipes.FirstOrDefault(x => x.name.Equals(activity.Text, StringComparison.CurrentCultureIgnoreCase));
             var msg = "";
             if (recipe == null)
             {
@@ -48,14 +48,14 @@ namespace WhatCanICook
             await connector.Conversations.ReplyToActivityAsync(activity.CreateReply(msg));
         }
 
-        public static async Task GetRecipes(Activity activity)
+        public async Task GetRecipes(Activity activity)
         {
-            var ingredients = activity.Text.Split(',').ToList();
+            var ingredients = activity.Text.Split(',').Select(x=> x.TrimStart().TrimEnd()).Where(x=> !string.IsNullOrEmpty(x)).ToList();
             var ingredientsStr = new StringBuilder();
 
             for (int i = 0; i < ingredients.Count; i++)
             {
-                ingredientsStr.Append($"Ingredients[{i}]={ingredients[i]}");
+                ingredientsStr.Append($"Ingredients[{i}]={ingredients[i]}&");
             };
 
             var url = $"http://whatcanicook-service.azurewebsites.net/api/recipe?{ingredientsStr.ToString()}";

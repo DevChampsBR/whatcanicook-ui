@@ -7,9 +7,9 @@ namespace WhatCanICook
 
     public class MessageIntro
     {
-        public static int status = 0;
+        public int status = 0;
 
-        public static async Task Post([FromBody]Activity activity)
+        public async Task Post([FromBody]Activity activity)
         {
             using (var connector = new ConnectorClient(new System.Uri(activity.ServiceUrl)))
             {
@@ -25,6 +25,7 @@ namespace WhatCanICook
                     {
                         var reply = activity.CreateReply($"Mamãe tá cansada demais. Hoje você vai cozinhar! Vai ver o que tem disponível no armário e geladeira.");
                         await connector.Conversations.ReplyToActivityAsync(reply);
+                        MessagesController.SetInternalState(CookBotState.Webapi);
                     }
                 }
             }
