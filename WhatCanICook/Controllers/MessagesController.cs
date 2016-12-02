@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Http.Description;
 using Microsoft.Bot.Connector;
-using Newtonsoft.Json;
 
 namespace WhatCanICook
 {
@@ -21,6 +18,9 @@ namespace WhatCanICook
             _state = state;
         }
 
+        static MessageIntro messageIntro = new MessageIntro();
+        static MessageWebapi messageWebApi = new MessageWebapi();
+
         /// <summary>
         /// POST: api/Messages
         /// Receive a message from a user and reply to it
@@ -33,7 +33,7 @@ namespace WhatCanICook
                 if (activity.Text.Equals("reset", StringComparison.CurrentCultureIgnoreCase))
                 {
                     MessagesController.SetInternalState(CookBotState.Intro);
-                    MessageIntro.status = 0;
+                    messageIntro = new MessageIntro();
                 }
                 else
                 {
@@ -46,10 +46,10 @@ namespace WhatCanICook
                             await MessageIngredientes.Post(activity);
                             break;
                         case CookBotState.Webapi:
-                            await MessageWebapi.Post(activity);
+                            await messageWebApi.Post(activity);
                             break;
                         case CookBotState.Intro:
-                            await MessageIntro.Post(activity);
+                            await messageIntro.Post(activity);
                             break;
                     }
                 }
