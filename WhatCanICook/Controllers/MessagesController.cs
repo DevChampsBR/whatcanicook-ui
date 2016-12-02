@@ -34,6 +34,7 @@ namespace WhatCanICook
                 {
                     MessagesController.SetInternalState(CookBotState.Intro);
                     messageIntro = new MessageIntro();
+                    messageWebApi = new MessageWebapi();
                 }
                 else
                 {
