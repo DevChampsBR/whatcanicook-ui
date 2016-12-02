@@ -33,7 +33,7 @@ namespace WhatCanICook
 
         public async Task SelectRecipe(Activity activity)
         {
-            var recipe = recipes.FirstOrDefault(x => x.name.Contains(activity.Text));
+            var recipe = recipes.FirstOrDefault(x => x.name.Equals(activity.Text, StringComparison.CurrentCultureIgnoreCase));
             var msg = "";
             if (recipe == null)
             {
@@ -50,12 +50,12 @@ namespace WhatCanICook
 
         public async Task GetRecipes(Activity activity)
         {
-            var ingredients = activity.Text.Split(',').ToList();
+            var ingredients = activity.Text.Split(',').Select(x=> x.TrimStart().TrimEnd()).Where(x=> !string.IsNullOrEmpty(x)).ToList();
             var ingredientsStr = new StringBuilder();
 
             for (int i = 0; i < ingredients.Count; i++)
             {
-                ingredientsStr.Append($"Ingredients[{i}]={ingredients[i]}");
+                ingredientsStr.Append($"Ingredients[{i}]={ingredients[i]}&");
             };
 
             var url = $"http://whatcanicook-service.azurewebsites.net/api/recipe?{ingredientsStr.ToString()}";
