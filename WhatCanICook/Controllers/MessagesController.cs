@@ -16,10 +16,14 @@ namespace WhatCanICook
     public class MessagesController : ApiController
     {
         static CookBotState _state = CookBotState.Initial;
+
         static public void SetInternalState(CookBotState state)
         {
             _state = state;
         }
+
+        static MessageIntro messageIntro = new MessageIntro();
+        static MessageWebapi messageWebApi = new MessageWebapi();
 
         /// <summary>
         /// POST: api/Messages
@@ -38,10 +42,10 @@ namespace WhatCanICook
                         await MessageIngredientes.Post(activity);
                         break;
                     case CookBotState.Webapi:
-                        await MessageWebapi.Post(activity);
+                        await messageWebApi.Post(activity);
                         break;
                     case CookBotState.Intro:
-                        await MessageIntro.Post(activity);
+                        await messageIntro.Post(activity);
                         break;
 
                 }

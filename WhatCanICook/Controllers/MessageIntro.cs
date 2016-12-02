@@ -7,9 +7,9 @@ namespace WhatCanICook
 
     public class MessageIntro
     {
-        public static int status = 0;
+        public int status = 0;
 
-        public static async Task Post([FromBody]Activity activity)
+        public async Task Post([FromBody]Activity activity)
         {
             using (var connector = new ConnectorClient(new System.Uri(activity.ServiceUrl)))
             {

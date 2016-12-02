@@ -13,25 +13,25 @@ namespace WhatCanICook
 {
     public class MessageWebapi
     {
-        public static List<DtoResponse.Recipe> recipes;
-        public static int step = 0;
+        public List<DtoResponse.Recipe> recipes;
+        public int step = 0;
 
-        public static async Task Post([FromBody]Activity activity)
+        public async Task Post([FromBody]Activity activity)
         {
             switch (step)
             {
                 case 0:
-                    await MessageWebapi.GetRecipes(activity);
+                    await GetRecipes(activity);
                     break;
                 case 1:
-                    await MessageWebapi.SelectRecipe(activity);
+                    await SelectRecipe(activity);
                     break;
                 default:
                     break;
             }
         }
 
-        public static async Task SelectRecipe(Activity activity)
+        public async Task SelectRecipe(Activity activity)
         {
             var recipe = recipes.FirstOrDefault(x => x.name.Contains(activity.Text));
             var msg = "";
@@ -48,7 +48,7 @@ namespace WhatCanICook
             await connector.Conversations.ReplyToActivityAsync(activity.CreateReply(msg));
         }
 
-        public static async Task GetRecipes(Activity activity)
+        public async Task GetRecipes(Activity activity)
         {
             var ingredients = activity.Text.Split(',').ToList();
             var ingredientsStr = new StringBuilder();
