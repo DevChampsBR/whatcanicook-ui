@@ -15,7 +15,7 @@ namespace WhatCanICook
     [BotAuthentication]
     public class MessagesController : ApiController
     {
-        static CookBotState _state = CookBotState.Initial;
+        static CookBotState _state = CookBotState.Webapi;
         static public void SetInternalState(CookBotState state)
         {
             _state = state;
