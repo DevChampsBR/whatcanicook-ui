@@ -47,28 +47,28 @@ namespace WhatCanICook
                 msg = $"Modo de preparo: \r\n{string.Join(" - \r\n", recipe.directions.Select(x => x).ToList())}";
                 reply = activity.CreateReply(msg);
 
-                reply.Attachments = new List<Attachment>();
-                List<CardImage> cardImages = new List<CardImage>();
-                cardImages.Add(new CardImage(url: recipe.image));
+                //reply.Attachments = new List<Attachment>();
+                //List<CardImage> cardImages = new List<CardImage>();
+                //cardImages.Add(new CardImage(url: recipe.image));
 
-                List<CardAction> cardButtons = new List<CardAction>();
-                CardAction plButton = new CardAction()
-                {
-                    Value = recipe.image,
-                    Type = "openUrl",
-                    Title = recipe.name
-                };
+                //List<CardAction> cardButtons = new List<CardAction>();
+                //CardAction plButton = new CardAction()
+                //{
+                //    Value = recipe.image,
+                //    Type = "openUrl",
+                //    Title = recipe.name
+                //};
 
-                cardButtons.Add(plButton);
-                HeroCard plCard = new HeroCard()
-                {
-                    Title = "Receita",
-                    Subtitle = recipe.name,
-                    Images = cardImages,
-                    Buttons = cardButtons
-                };
-                Attachment plAttachment = plCard.ToAttachment();
-                reply.Attachments.Add(plAttachment);
+                //cardButtons.Add(plButton);
+                //HeroCard plCard = new HeroCard()
+                //{
+                //    Title = "Receita",
+                //    Subtitle = recipe.name,
+                //    Images = cardImages,
+                //    Buttons = cardButtons
+                //};
+                //Attachment plAttachment = plCard.ToAttachment();
+                //reply.Attachments.Add(plAttachment);
             }
 
             ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
@@ -100,7 +100,33 @@ namespace WhatCanICook
             if (dtoResponse.success)
             {
                 recipes = dtoResponse.recipes.ToList();
-                reply = activity.CreateReply($"Qual receita você quer fazer? \r\n{string.Join(" - \r\n", dtoResponse.recipes.Select(x => x.name).ToList())}");
+                reply = activity.CreateReply($"Qual receita você quer fazer?");
+
+                reply.Attachments = new List<Attachment>();
+                foreach (var recipe in recipes)
+                {
+                    List<CardImage> cardImages = new List<CardImage>();
+                    cardImages.Add(new CardImage(url: recipe.image));
+
+                    List<CardAction> cardButtons = new List<CardAction>();
+                    CardAction plButton = new CardAction()
+                    {
+                        Value = recipe.name,
+                        Type = "postBack",
+                        Title = recipe.name
+                    };
+
+                    cardButtons.Add(plButton);
+                    HeroCard plCard = new HeroCard()
+                    {
+                        Images = cardImages, 
+                        Buttons = cardButtons
+                    };
+                    Attachment plAttachment = plCard.ToAttachment();
+                    reply.Attachments.Add(plAttachment);
+                }
+
+
                 step = 1;
             }
             else
