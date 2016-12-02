@@ -18,7 +18,7 @@ namespace WhatCanICook
                     if (status == 0)
                     {
                         status = 1;
-                        var reply = activity.CreateReply($"Bom dia, Filho.");
+                        var reply = activity.CreateReply($"Boa noite, Filho.");
                         await connector.Conversations.ReplyToActivityAsync(reply);
                     }
                     else if(status == 1)
