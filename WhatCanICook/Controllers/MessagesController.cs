@@ -7,18 +7,18 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using Microsoft.Bot.Connector;
 using Newtonsoft.Json;
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.FormFlow;
 
 namespace WhatCanICook
 {
+    public enum CookBotState { Initial, Ingredients, Webapi, Intro };
+
     [BotAuthentication]
     public class MessagesController : ApiController
     {
-
-        internal static IDialog<IngredientsList> MakeRootDialog()
+        static CookBotState _state = CookBotState.Intro;
+        static public void SetInternalState(CookBotState state)
         {
-            return Chain.From(() => FormDialog.FromForm(IngredientsList.BuildForm));
+            _state = state;
         }
 
         /// <summary>
@@ -29,36 +29,23 @@ namespace WhatCanICook
         {
             if (activity.Type == ActivityTypes.Message)
             {
-                //StateClient stateClient = activity.GetStateClient();
+                switch (_state)
+                {
+                    case CookBotState.Initial:
+                        await MessageInitial.Post(activity);
+                        break;
+                    case CookBotState.Ingredients:
+                        await MessageIngredientes.Post(activity);
+                        break;
+                    case CookBotState.Webapi:
+                        await MessageWebapi.Post(activity);
+                        break;
+                    case CookBotState.Intro:
+                        await MessageIntro.Post(activity);
+                        break;
 
-                ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+                }
 
-                /*
-                ChannelAccount botAccount = new ChannelAccount("1234", "WhatCanICook");
-                ChannelAccount userAccount = new ChannelAccount("teste", "Thiago");
-
-                var conversationId = await connector.Conversations.CreateDirectConversationAsync(botAccount, userAccount);
-
-                IMessageActivity message = Activity.CreateMessageActivity();
-                message.From = botAccount;
-                message.Recipient = userAccount;
-                message.Conversation = new ConversationAccount(id: conversationId.Id);
-                message.Text = "Olá!";
-                message.Locale = "pt-BR";
-
-                await connector.Conversations.SendToConversationAsync((Activity)message);
-                */
-
-                // calculate something for us to return
-                //int length = (activity.Text ?? string.Empty).Length;
-
-                // return our reply to the user
-                //Activity reply = activity.CreateReply($"You sent {activity.Text} which was {length} characters");
-                //await connector.Conversations.ReplyToActivityAsync(reply);
-
-                //Forms flow
-                await Conversation.SendAsync(activity, MakeRootDialog);               
-                
             }
             else
             {
